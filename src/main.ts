@@ -1,8 +1,8 @@
-import { Player } from "./classes/Player";
+import { Player, Projectile } from "./classes";
 
 const canvas: HTMLCanvasElement = document.querySelector("canvas")!;
 const c: CanvasRenderingContext2D = canvas.getContext("2d")!;
-const backMusic = new Audio("/public/audio/backgroundMusic.wav");
+const backMusic = new Audio("/audio/backgroundMusic.wav");
 
 canvas.width = innerWidth;
 canvas.height = innerHeight;
@@ -20,21 +20,27 @@ const keys = {
   },
 };
 
+const projectile = new Projectile({x: 200, y: 200}, {x: 1, y: 0})
+
 function animate() {
   requestAnimationFrame(animate);
+  c.fillStyle = 'black'
   c.fillRect(0, 0, canvas.width, canvas.height);
   player.update(c);
+  projectile.update(c)
 
   if (keys.a.pressed && player.position.x >= 0) {
     player.velocity.x = -5;
-    player.rotation = -.15
+    player.rotation = -Math.PI / 20;
   } else if (
     keys.d.pressed &&
     player.position.x + player.width <= canvas.width
   ) {
     player.velocity.x = 5;
+    player.rotation = Math.PI / 20;
   } else {
     player.velocity.x = 0;
+    player.rotation = 0;
   }
 }
 
@@ -68,6 +74,11 @@ window.addEventListener("keyup", (event) => {
       break;
   }
 });
+
+//? for mobile
+// window.addEventListener("touchmove", (event) => {
+//   console.log(event.touches.item(0)?.clientX)
+// })
 
 //* GAME ANIMATE
 animate();
