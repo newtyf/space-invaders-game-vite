@@ -1,24 +1,73 @@
-import './style.css'
-import typescriptLogo from './typescript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter'
+import { Player } from "./classes/Player";
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
+const canvas: HTMLCanvasElement = document.querySelector("canvas")!;
+const c: CanvasRenderingContext2D = canvas.getContext("2d")!;
+const backMusic = new Audio("/public/audio/backgroundMusic.wav");
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+const player = new Player(canvas);
+const keys = {
+  a: {
+    pressed: false,
+  },
+  d: {
+    pressed: false,
+  },
+  space: {
+    pressed: false,
+  },
+};
+
+function animate() {
+  requestAnimationFrame(animate);
+  c.fillRect(0, 0, canvas.width, canvas.height);
+  player.update(c);
+
+  if (keys.a.pressed && player.position.x >= 0) {
+    player.velocity.x = -5;
+    player.rotation = -.15
+  } else if (
+    keys.d.pressed &&
+    player.position.x + player.width <= canvas.width
+  ) {
+    player.velocity.x = 5;
+  } else {
+    player.velocity.x = 0;
+  }
+}
+
+//* LISTENERS
+window.addEventListener("keydown", (event) => {
+  backMusic.play();
+  switch (event.key) {
+    case "d":
+      keys.d.pressed = true;
+      break;
+    case "a":
+      keys.a.pressed = true;
+      break;
+    case " ":
+      keys.space.pressed = true;
+    default:
+      break;
+  }
+});
+window.addEventListener("keyup", (event) => {
+  switch (event.key) {
+    case "d":
+      keys.d.pressed = false;
+      break;
+    case "a":
+      keys.a.pressed = false;
+      break;
+    case " ":
+      keys.space.pressed = false;
+    default:
+      break;
+  }
+});
+
+//* GAME ANIMATE
+animate();
