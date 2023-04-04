@@ -1,14 +1,17 @@
+import { canvas, c } from "../config/canvas";
 import { coordinate } from "../types";
+import { Projectile } from "./Projectile";
 
 export class Player {
   position: coordinate = { x: 0, y: 0 };
-  velocity: coordinate = { x: 0, y: 0 };
+  private velocity: coordinate = { x: 0, y: 0 };
   private image: HTMLImageElement = new Image();
-  width: number = 90;
-  height: number = 60;
+  width: number = 0;
+  height: number = 0;
   rotation: number = 0;
+  projectiles: Projectile[] = [];
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor() {
     this.image.src = "/spaceship.png";
     this.image.onload = () => {
       const scale = 0.15;
@@ -21,7 +24,7 @@ export class Player {
     };
   }
 
-  draw(c: CanvasRenderingContext2D): void {
+  draw(): void {
     c.save();
     c.translate(
       this.position.x + this.width / 2,
@@ -41,9 +44,34 @@ export class Player {
     );
     c.restore();
   }
-
-  update(c: CanvasRenderingContext2D) {
-    this.draw(c);
+  update() {
+    this.draw();
     this.position.x += this.velocity.x;
+  }
+
+  moveRight(velocityX: number) {
+    this.velocity.x = velocityX;
+  }
+  moveLeft(velocityX: number) {
+    this.velocity.x = -velocityX;
+  }
+  dontMove() {
+    this.velocity.x = 0;
+  }
+
+  basicAttack() {
+    this.projectiles.push(
+      new Projectile(
+        {
+          x: this.position.x + this.width / 2,
+          y: this.position.y,
+        },
+        { x: 0, y: -2 }
+      )
+    );
+  }
+
+  deleteProjectile(index: number) {
+    this.projectiles.splice(index, 1)
   }
 }
